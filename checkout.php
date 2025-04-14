@@ -48,49 +48,65 @@ $total = 0;
         </div>
     </nav>
 
-    <div class="container-fluid bg-light min-vh-100 py-5 d-flex justify-content-center align-items-start">
-        <div class="card shadow p-4">
-            <h3 class="mb-4 text-center">Checkout Summary</h3>
-            <?php if (!empty($cart)): ?>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Qty</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($cart as $item):
-                            $item_total = $item['product_quantity'] * $item['product_price'];
-                            $total += $item_total;
-                            ?>
-                            <tr>
-                                <td><?= $item['product_name']; ?></td>
-                                <td><?= $item['product_quantity']; ?></td>
-                                <td>£<?= number_format($item['product_price'], 2); ?></td>
-                                <td>£<?= number_format($item_total, 2); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <tr>
-                            <td colspan="3" class="text-end fw-bold">Total:</td>
-                            <td><strong>£<?= number_format($total, 2); ?></strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="alert alert-info text-center mt-3">
-                    This is a placeholder checkout page.<br>
-                    Checkout functionality is not yet implemented.
-                </div>
-            <?php else: ?>
-                <div class="alert alert-warning text-center">Your cart is empty.</div>
-            <?php endif; ?>
-            <div class="text-center mt-3">
-                <a href="profile.php" class="btn btn-outline-secondary">Back to Shop</a>
+    <div class="container-fluid bg-light min-vh-100 d-flex justify-content-center align-items-center pb-5">
+        <div class="d-flex flex-column flex-md-row justify-content-center align-items-stretch shadow checkout-container"
+            style="border-radius: 20px; overflow: hidden;">
+
+            <div style="width: 500px; overflow: hidden;">
+                <img src="images/checkout.webp" alt="Checkout Illustration" class="img-fluid w-100 h-100"
+                    style="object-fit: cover; object-position: left center; border-top-left-radius: 20px; border-bottom-left-radius: 20px;">
             </div>
+
+            <div class="p-4 bg-white d-flex flex-column justify-content-between"
+                style="width: 500px; border-top-right-radius: 20px; border-bottom-right-radius: 20px;">
+                <div>
+                    <h3 class="mb-4 text-center">Checkout Summary</h3>
+
+                    <?php if (!empty($cart)): ?>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Qty</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($cart as $item):
+                                    $item_total = $item['product_quantity'] * $item['product_price'];
+                                    $total += $item_total;
+                                    ?>
+                                    <tr>
+                                        <td><?= $item['product_name']; ?></td>
+                                        <td><?= $item['product_quantity']; ?></td>
+                                        <td>£<?= number_format($item['product_price'], 2); ?></td>
+                                        <td>£<?= number_format($item_total, 2); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Total:</td>
+                                    <td><strong>£<?= number_format($total, 2); ?></strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="alert alert-info text-center mt-3">
+                            This is a placeholder checkout page.<br>
+                            Checkout functionality is not yet implemented.
+                        </div>
+                    <?php else: ?>
+                        <div class="alert alert-warning text-center">Your cart is empty.</div>
+                    <?php endif; ?>
+                </div>
+                <div class="text-center mt-3">
+                    <a href="#" class="btn btn-outline-success w-100 disabled">Contiue to Payment</a>
+                    <a href="profile.php" class="btn btn-outline-secondary w-100">Back to Shop</a>
+                </div>
+            </div>
+
         </div>
     </div>
+
 </body>
 
 </html>
