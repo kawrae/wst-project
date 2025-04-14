@@ -11,8 +11,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: rgb(17, 46, 6);
-            --secondary: rgb(130, 240, 163);
+            --primary: rgb(0, 0, 0);
+            --secondary: rgb(196, 199, 197);
             --white: #fff;
             --dark: #1c1c1e;
         }
@@ -151,7 +151,7 @@
         <canvas id="bg-canvas"></canvas>
         <div class="hero-content">
             <h1>Secure Shopping Made Simple</h1>
-            <p>Welcome to B01651145 project submission for Web Server Technologies COMPO09023</p>
+            <p>Welcome to B01651145 project submission for Web Server Technologies COMP09023</p>
             <a href="profile.php" class="btn btn-main">Start Exploring</a>
         </div>
     </section>
