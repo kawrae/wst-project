@@ -225,7 +225,7 @@ function displayproduct($conn, $fetch)
     }
 
     // REMOVE ITEM
-    if (isset($_GET["action"]) && $_GET["action"] == "delete") {
+    if (isset($_GET["action"]) && $_GET["action"] == "delete" && isset($_GET["id"])) {
         foreach ($_SESSION["shopping_cart"] as $keys => $value) {
             if ($value["product_id"] == $_GET["id"]) {
                 unset($_SESSION["shopping_cart"][$keys]);
@@ -236,23 +236,11 @@ function displayproduct($conn, $fetch)
 
         saveShoppingCart($conn, $user_id, $_SESSION["shopping_cart"]);
 
-        echo "
-        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-        <script>
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Product has been removed',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true
-            });
-            setTimeout(() => {
-                window.location = 'profile.php';
-            }, 2100);
-        </script>";
+        $_SESSION['product_removed'] = true;
+        header("Location: profile.php");
+        exit;
     }
+
 
 
     // UPDATE QUANTITY
@@ -339,17 +327,25 @@ if (isset($_POST['delete'])) {
     if (isset($_POST['delete_id'])) {
         $id = $_POST['delete_id'];
 
+        $conn->query("DELETE FROM shopping_cart WHERE product_id = $id");
+
+        // Then delete the product itself
         $sql = "DELETE FROM product WHERE id = $id";
         if ($conn->query($sql) === TRUE) {
-            echo "Product deleted successfully";
+            $_SESSION['product_deleted'] = true;
+            header("Location: profile.php");
+            exit;
         } else {
-            echo "Error deleting product: " . $conn->error;
+            $_SESSION['product_error'] = "Error deleting product: " . $conn->error;
+            header("Location: profile.php");
+            exit;
         }
     } else {
-        echo "Product ID not provided for deletion.";
+        $_SESSION['product_error'] = "Product ID not provided for deletion.";
+        header("Location: profile.php");
+        exit;
     }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -410,6 +406,49 @@ if (isset($_POST['delete'])) {
                 </ul>
             </div>
         </nav>
+
+        <?php if (isset($_SESSION['product_removed'])): ?>
+            <script>
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Product has been removed',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            </script>
+            <?php unset($_SESSION['product_removed']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['product_deleted'])): ?>
+            <script>
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Product deleted successfully',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            </script>
+            <?php unset($_SESSION['product_deleted']); ?>
+        <?php endif; ?>
+
+        <?php if (isset($_SESSION['product_error'])): ?>
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: '<?php echo $_SESSION["product_error"]; ?>'
+                });
+            </script>
+            <?php unset($_SESSION['product_error']); ?>
+        <?php endif; ?>
+
+
 
         <div class="px-4 py-5 w-100" style="max-width: 85%; margin: 0 auto;">
             <div class="row gx-5 gy-4">
@@ -474,7 +513,7 @@ if (isset($_POST['delete'])) {
                                                 <div class="card h-100 shadow-sm p-3 mb-3">
                                                     <img src="products_img/<?php echo $row["image"]; ?>" width="100%" height="200px"
                                                         class="card-img-top rounded mb-2" style="object-fit: cover;">
-                                                    <h5 class="text-info"><?php echo $row["description"]; ?></h5>
+                                                    <h5 class="" style="color:black;"><?php echo $row["description"]; ?></h5>
                                                     <h6 class="text-danger">£<?php echo $row["price"]; ?></h6>
                                                     <input type="text" name="quantity" class="form-control mb-2" value="1">
                                                     <input type="hidden" name="hidden_name"
