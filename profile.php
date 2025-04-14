@@ -153,10 +153,15 @@ function displayUsers($conn, $fetch)
 function displayproduct($conn, $fetch)
 {
     $user_id = $fetch['id'];
-    $query = "SELECT * FROM shopping_cart WHERE user_id = '$user_id'";
-    $result = mysqli_query($conn, $query);
-    if (mysqli_num_rows($result) > 0) {
-        $_SESSION["shopping_cart"] = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+    if (!isset($_SESSION["shopping_cart"])) {
+        $query = "SELECT * FROM shopping_cart WHERE user_id = '$user_id'";
+        $result = mysqli_query($conn, $query);
+        if (mysqli_num_rows($result) > 0) {
+            $_SESSION["shopping_cart"] = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        } else {
+            $_SESSION["shopping_cart"] = [];
+        }
     }
 
     // ADD TO CART
@@ -224,27 +229,31 @@ function displayproduct($conn, $fetch)
         foreach ($_SESSION["shopping_cart"] as $keys => $value) {
             if ($value["product_id"] == $_GET["id"]) {
                 unset($_SESSION["shopping_cart"][$keys]);
-                saveShoppingCart($conn, $user_id, $_SESSION["shopping_cart"]);
-                echo "
-                <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-                <script>
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Product has been removed',
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true
-                });
-                setTimeout(() => {
-                    window.location = 'profile.php';
-                }, 2100);
-                </script>";
+                $_SESSION["shopping_cart"] = array_values($_SESSION["shopping_cart"]); // reindex
                 break;
             }
         }
+
+        saveShoppingCart($conn, $user_id, $_SESSION["shopping_cart"]);
+
+        echo "
+        <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+        <script>
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Product has been removed',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+            setTimeout(() => {
+                window.location = 'profile.php';
+            }, 2100);
+        </script>";
     }
+
 
     // UPDATE QUANTITY
     if (isset($_GET["action"]) && $_GET["action"] == "update" && isset($_POST["quantities"])) {
@@ -265,20 +274,20 @@ function displayproduct($conn, $fetch)
 
 function saveShoppingCart($conn, $user_id, $shopping_cart)
 {
-    mysqli_query($conn, "DELETE FROM shopping_cart WHERE user_id = '$user_id'");
-
     foreach ($shopping_cart as $item) {
         $product_id = $item['product_id'];
         $product_name = mysqli_real_escape_string($conn, $item['product_name']);
         $product_price = floatval($item['product_price']);
         $product_quantity = intval($item['product_quantity']);
 
-        $result = mysqli_query($conn, "INSERT INTO shopping_cart (user_id, product_id, product_name, product_price, product_quantity)
-        VALUES ('$user_id', '$product_id', '$product_name', '$product_price', '$product_quantity')");
+        $query = "INSERT INTO shopping_cart (user_id, product_id, product_name, product_price, product_quantity)
+                  VALUES ('$user_id', '$product_id', '$product_name', '$product_price', '$product_quantity')
+                  ON DUPLICATE KEY UPDATE 
+                      product_quantity = VALUES(product_quantity),
+                      product_name = VALUES(product_name),
+                      product_price = VALUES(product_price)";
 
-        if (!$result) {
-            error_log("Insert Error: " . mysqli_error($conn));
-        }
+        mysqli_query($conn, $query);
     }
 }
 
@@ -527,8 +536,14 @@ if (isset($_POST['delete'])) {
                                     <?php } ?>
                                 </tbody>
                             </table>
-                            <div class="text-end mt-3">
-                                <a href="checkout.php" class="btn btn-outline-success">Proceed to Checkout</a>
+                            <div class="d-flex flex-column flex-md-row justify-content-end align-items-stretch mt-3"
+                                style="gap: 1rem;">
+                                <form method="post" id="clearCartForm" class="w-100 w-md-auto">
+                                    <button type="button" class="btn btn-outline-danger w-100" id="clearCartBtn">Clear
+                                        Cart</button>
+                                </form>
+                                <a href="checkout.php" class="btn btn-outline-success w-100 w-md-auto">Proceed to
+                                    Checkout</a>
                             </div>
                         </div>
                     </div>
@@ -654,46 +669,85 @@ if (isset($_POST['delete'])) {
     </script>
 
     <script>
-        $(document).ready(function () {
-            $('.quantity-input').on('keypress', function (e) {
-                if (e.which === 13) { // Enter key
-                    e.preventDefault();
-                    let input = $(this);
-                    let productId = input.data('id');
-                    let newQty = input.val();
+        let debounceTimeout;
+        $('.quantity-input').on('input', function () {
+            clearTimeout(debounceTimeout);
+            const input = $(this);
+            debounceTimeout = setTimeout(() => {
+                const productId = input.data('id');
+                const newQty = parseInt(input.val(), 10);
 
-                    $.ajax({
-                        url: 'update_quantity.php',
-                        method: 'POST',
-                        data: {
-                            product_id: productId,
-                            quantity: newQty
-                        },
-                        dataType: 'json',
-                        success: function (response) {
-                            if (response.status === 'success') {
-                                let itemTotalSpan = $('span.item-total[data-id="' + productId + '"]');
-                                itemTotalSpan.text('£' + response.total);
+                if (isNaN(newQty) || newQty < 1) return;
 
-                                let cartTotal = 0;
-                                $('.item-total').each(function () {
-                                    let amount = parseFloat($(this).text().replace('£', ''));
-                                    if (!isNaN(amount)) cartTotal += amount;
-                                });
-                                $('#cart-total').text('£' + cartTotal.toFixed(2));
-                            } else {
-                                console.error('Update failed');
-                            }
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('AJAX Error:', status, error);
+                input.prop('disabled', true);
+                $.ajax({
+                    url: 'update_quantity.php',
+                    method: 'POST',
+                    data: {
+                        product_id: productId,
+                        quantity: newQty
+                    },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            $('span.item-total[data-id="' + productId + '"]').text('£' + response.itemTotal);
+                            $('#cart-total').text('£' + response.cartTotal);
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Quantity updated',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
                         }
-                    });
+                    },
+                    complete: function () {
+                        input.prop('disabled', false);
+                    }
+                });
+            }, 500);
+        });
+    </script>
+
+    <script>
+        document.getElementById('clearCartBtn').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Clear your cart?',
+                text: "This will remove all products from your cart.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, clear it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('clear_cart.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                Swal.fire({
+                                    toast: true,
+                                    position: 'top-end',
+                                    icon: 'success',
+                                    title: 'Cart cleared',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                setTimeout(() => location.reload(), 1600);
+                            } else {
+                                Swal.fire('Oops!', data.message || 'Failed to clear cart.', 'error');
+                            }
+                        });
                 }
             });
         });
     </script>
-
 </body>
 
 
