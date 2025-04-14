@@ -80,7 +80,7 @@ if (isset($_POST['update_product'])) {
         <div class="container-fluid justify-content-center">
             <ul class="navbar-nav text-center">
                 <li class="nav-item mx-2">
-                    <a class="nav-link disabled" href="#">Home</a>
+                    <a class="nav-link" href="index.php">Home</a>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link active" href="profile.php">Profile</a>
@@ -117,7 +117,7 @@ if (isset($_POST['update_product'])) {
             <input type="file" name="image" accept="image/*" class="box">
 
             <input type="submit" name="update_product" value="Update Product" class="btn btn-outline-primary">
-            <a href="profile.php" class="btn btn-outline-primary">Cancel</a>
+            <a href="profile.php" class="btn btn-outline-danger">Cancel</a>
         </form>
     </div>
 

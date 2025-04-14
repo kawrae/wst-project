@@ -297,7 +297,7 @@ function adminProducts($conn, $fetch)
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        echo "<div class='card shadow-sm mt-5 p-4'>";
+        echo "<div class='card shadow-sm p-4'>";
         echo "<h3 class='text-center mb-4'>Table of Products</h3>";
         echo "<div class='table-responsive'>";
         echo "<table class='table table-bordered'>";
@@ -378,176 +378,176 @@ if (isset($_POST['delete'])) {
 </head>
 
 <body>
+    <div class="main-container">
+        <?php if (isset($_SESSION['delete_success'])): ?>
+            <script>
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Selected users deleted successfully',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+            </script>
+            <?php unset($_SESSION['delete_success']); ?>
+        <?php endif; ?>
 
-    <?php if (isset($_SESSION['delete_success'])): ?>
-        <script>
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Selected users deleted successfully',
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true
-            });
-        </script>
-        <?php unset($_SESSION['delete_success']); ?>
-    <?php endif; ?>
 
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100">
-        <div class="container-fluid justify-content-center">
-            <ul class="navbar-nav text-center">
-                <li class="nav-item mx-2">
-                    <a class="nav-link disabled" href="#">Home</a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a class="nav-link active" href="profile.php">Profile</a>
-                </li>
-                <li class="nav-item mx-2">
-                    <a class="nav-link disabled" href="#">Contact</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="container-fluid px-4 py-5 bg-light">
-        <div class="row gx-5 gy-4">
-
-            <!-- Profile Column -->
-            <div class="col-12 col-md-4 col-lg-3">
-                <div class="card text-center shadow-sm p-4">
-                    <?php
-                    $select = mysqli_query($conn, "SELECT * FROM `user_form` WHERE id = '$user_id'") or die('query failed');
-
-                    if (mysqli_num_rows($select) > 0) {
-                        $fetch = mysqli_fetch_assoc($select);
-                        $imagePath = !empty($fetch['Image']) ? 'uploaded_img/' . $fetch['Image'] : 'images/default-avatar.png';
-                        echo '<img src="' . $imagePath . '" class="img-fluid rounded-circle mx-auto" width="120" height="120" />';
-                    } else {
-                        echo '<img src="images/default-avatar.png" class="img-fluid rounded-circle mx-auto" width="120" height="120" />';
-                    }
-                    ?>
-                    <h3 class="mt-3"><?php echo $fetch['name']; ?></h3>
-
-                    <a href="update_profile.php" class="btn btn-outline-primary w-100 my-2">Update Profile</a>
-
-                    <?php
-                    if (isset($fetch['user_type']) && ($fetch['user_type'] == 'user' || $fetch['user_type'] == 'admin')) {
-                        echo '<form method="post" action="">';
-                        echo '<input type="hidden" name="confirm_delete" value="1">';
-                        echo '<button type="submit" id="deleteAccountBtn" name="confirm_delete" class="btn btn-outline-danger w-100 my-2">Delete Your Account</button>';
-
-                        echo '</form>';
-                    }
-                    ?>
-
-                    <a href="profile.php?logout=<?php echo $user_id; ?>"
-                        class="btn btn-outline-secondary w-100 my-2">Logout</a>
-
-                    <p class="mt-3">New <a href="login.php">Login</a> or <a href="register.php">Register</a></p>
-                </div>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100">
+            <div class="container-fluid justify-content-center">
+                <ul class="navbar-nav text-center">
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link active" href="profile.php">Profile</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link disabled" href="#">Contact</a>
+                    </li>
+                </ul>
             </div>
+        </nav>
 
-            <!-- Main Content Column -->
-            <div class="col-12 col-md-8 col-lg-9">
-                <?php
-                if (isset($fetch['user_type']) && ($fetch['user_type'] == 'owner' || $fetch['user_type'] == 'admin')) {
-                    displayUsers($conn, $fetch);
-                    echo "<br><br>";
-                    adminProducts($conn, $fetch);
-                }
+        <div class="px-4 py-5 w-100" style="max-width: 85%; margin: 0 auto;">
+            <div class="row gx-5 gy-4">
 
-                if (isset($fetch['user_type']) && $fetch['user_type'] == 'user') {
-                    displayproduct($conn, $fetch);
-                    ?>
+                <!-- Profile Column -->
+                <div class="col-12 col-md-4 col-lg-3">
+                    <div class="card text-center shadow-sm p-4">
+                        <?php
+                        $select = mysqli_query($conn, "SELECT * FROM `user_form` WHERE id = '$user_id'") or die('query failed');
 
-                    <div>
-                        <h2 class="mb-3 shoppingcart">Shopping Cart</h2>
-                        <div class="row g-4">
-                            <?php
-                            $query = "select * from product order by id asc";
-                            $result = mysqli_query($conn, $query);
-                            if (mysqli_num_rows($result) > 0) {
-                                while ($row = mysqli_fetch_array($result)) {
-                                    ?>
-                                    <div class="col-6 col-md-4 col-lg-3">
-                                        <form method="post" action="profile.php?action=add&id=<?php echo $row["id"]; ?>">
-                                            <div class="card h-100 shadow-sm p-3">
-                                                <img src="products_img/<?php echo $row["image"]; ?>" width="100%" height="200px"
-                                                    class="card-img-top rounded mb-2" style="object-fit: cover;">
-                                                <h5 class="text-info"><?php echo $row["description"]; ?></h5>
-                                                <h6 class="text-danger">£<?php echo $row["price"]; ?></h6>
-                                                <input type="text" name="quantity" class="form-control mb-2" value="1">
-                                                <input type="hidden" name="hidden_name" value="<?php echo $row["description"]; ?>">
-                                                <input type="hidden" name="hidden_price" value="<?php echo $row["price"]; ?>">
-                                                <input type="submit" name="add" class="btn-cart w-100" value="Add to cart">
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <?php
+                        if (mysqli_num_rows($select) > 0) {
+                            $fetch = mysqli_fetch_assoc($select);
+                            $imagePath = !empty($fetch['Image']) ? 'uploaded_img/' . $fetch['Image'] : 'images/default-avatar.png';
+                            echo '<img src="' . $imagePath . '" class="img-fluid rounded-circle mx-auto" width="120" height="120" />';
+                        } else {
+                            echo '<img src="images/default-avatar.png" class="img-fluid rounded-circle mx-auto" width="120" height="120" />';
+                        }
+                        ?>
+                        <h3 class="mt-3"><?php echo $fetch['name']; ?></h3>
+
+                        <a href="update_profile.php" class="btn btn-outline-primary w-100 my-2">Update Profile</a>
+
+                        <?php if (isset($fetch['user_type']) && ($fetch['user_type'] == 'user' || $fetch['user_type'] == 'admin')): ?>
+                            <button type="button" id="deleteAccountBtn" class="btn btn-outline-danger w-100 my-2">Delete
+                                Your
+                                Account</button>
+                            <form id="deleteAccountForm" method="post" action="" style="display: none;">
+                                <input type="hidden" name="confirm_delete" value="1">
+                            </form>
+                        <?php endif; ?>
+
+                        <a href="profile.php?logout=<?php echo $user_id; ?>"
+                            class="btn btn-outline-secondary w-100 my-2">Logout</a>
+
+                        <p class="mt-3">New <a href="login.php">Login</a> or <a href="register.php">Register</a></p>
+                    </div>
+                </div>
+
+                <!-- Main Content Column -->
+                <div class="col-12 col-md-8 col-lg-9">
+                    <?php
+                    if (isset($fetch['user_type']) && ($fetch['user_type'] == 'owner' || $fetch['user_type'] == 'admin')) {
+                        displayUsers($conn, $fetch);
+                        echo "<br><br>";
+                        adminProducts($conn, $fetch);
+                    }
+
+                    if (isset($fetch['user_type']) && $fetch['user_type'] == 'user') {
+                        displayproduct($conn, $fetch);
+                        ?>
+
+                        <div>
+                            <div class="row g-4">
+                                <?php
+                                $query = "select * from product order by id asc";
+                                $result = mysqli_query($conn, $query);
+                                if (mysqli_num_rows($result) > 0) {
+                                    while ($row = mysqli_fetch_array($result)) {
+                                        ?>
+                                        <div class="col-6 col-md-4 col-lg-3">
+                                            <form method="post" action="profile.php?action=add&id=<?php echo $row["id"]; ?>">
+                                                <div class="card h-100 shadow-sm p-3 mb-3">
+                                                    <img src="products_img/<?php echo $row["image"]; ?>" width="100%" height="200px"
+                                                        class="card-img-top rounded mb-2" style="object-fit: cover;">
+                                                    <h5 class="text-info"><?php echo $row["description"]; ?></h5>
+                                                    <h6 class="text-danger">£<?php echo $row["price"]; ?></h6>
+                                                    <input type="text" name="quantity" class="form-control mb-2" value="1">
+                                                    <input type="hidden" name="hidden_name"
+                                                        value="<?php echo $row["description"]; ?>">
+                                                    <input type="hidden" name="hidden_price" value="<?php echo $row["price"]; ?>">
+                                                    <input type="submit" name="add" class="btn-cart w-100" value="Add to cart">
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <?php
+                                    }
                                 }
-                            }
-                            ?>
-                        </div>
+                                ?>
+                            </div>
 
-                        <div class="table-responsive mt-5">
-                            <h3 class="mb-3">Shopping Cart Details</h3>
-                            <table class="table table-bordered">
-                                <thead class="thead-dark">
-                                    <tr>
-                                        <th>Product Description</th>
-                                        <th>Quantity</th>
-                                        <th>Price</th>
-                                        <th>Total</th>
-                                        <th>Remove</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php
-                                    if (!empty($_SESSION["shopping_cart"])) {
-                                        $total = 0;
-                                        foreach ($_SESSION["shopping_cart"] as $key => $value) {
+                            <div class="table-responsive mt-5">
+                                <h3 class="mb-3">Shopping Cart</h3>
+                                <table class="table table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Product Description</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Total</th>
+                                            <th>Remove</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php
+                                        if (!empty($_SESSION["shopping_cart"])) {
+                                            $total = 0;
+                                            foreach ($_SESSION["shopping_cart"] as $key => $value) {
+                                                ?>
+                                                <tr>
+                                                    <td><?php echo $value["product_name"]; ?></td>
+                                                    <td>
+                                                        <input type="number" class="form-control quantity-input"
+                                                            data-id="<?php echo $value["product_id"]; ?>"
+                                                            value="<?php echo $value["product_quantity"]; ?>" min="1">
+                                                    </td>
+                                                    <td>£<?php echo number_format($value["product_price"], 2); ?></td>
+                                                    <td>
+                                                        <span class="item-total" data-id="<?php echo $value['product_id']; ?>">
+                                                            £<?php echo number_format($value["product_quantity"] * $value["product_price"], 2); ?>
+                                                        </span>
+                                                    </td>
+                                                    <td><a href="profile.php?action=delete&id=<?php echo $value["product_id"]; ?>"
+                                                            class="text-danger">Remove Item</a></td>
+                                                </tr>
+                                                <?php
+                                                $total += $value["product_quantity"] * $value["product_price"];
+                                            }
                                             ?>
                                             <tr>
-                                                <td><?php echo $value["product_name"]; ?></td>
-                                                <td>
-                                                    <input type="number" class="form-control quantity-input"
-                                                        data-id="<?php echo $value["product_id"]; ?>"
-                                                        value="<?php echo $value["product_quantity"]; ?>" min="1">
-                                                </td>
-                                                <td>£<?php echo number_format($value["product_price"], 2); ?></td>
-                                                <td>
-                                                    <span class="item-total" data-id="<?php echo $value['product_id']; ?>">
-                                                        £<?php echo number_format($value["product_quantity"] * $value["product_price"], 2); ?>
-                                                    </span>
-                                                </td>
-                                                <td><a href="profile.php?action=delete&id=<?php echo $value["product_id"]; ?>"
-                                                        class="text-danger">Remove Item</a></td>
+                                                <td colspan="3" class="text-end fw-bold">Total</td>
+                                                <td id="cart-total" colspan="2">£<?php echo number_format($total, 2); ?></td>
                                             </tr>
-                                            <?php
-                                            $total += $value["product_quantity"] * $value["product_price"];
-                                        }
-                                        ?>
-                                        <tr>
-                                            <td colspan="3" class="text-end fw-bold">Total</td>
-                                            <td id="cart-total" colspan="2">£<?php echo number_format($total, 2); ?></td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                            <div class="d-flex flex-column flex-md-row justify-content-end align-items-stretch mt-3"
-                                style="gap: 1rem;">
-                                <form method="post" id="clearCartForm" class="w-100 w-md-auto">
-                                    <button type="button" class="btn btn-outline-danger w-100" id="clearCartBtn">Clear
-                                        Cart</button>
-                                </form>
-                                <a href="checkout.php" class="btn btn-outline-success w-100 w-md-auto">Proceed to
-                                    Checkout</a>
+                                        <?php } ?>
+                                    </tbody>
+                                </table>
+                                <div class="d-flex flex-column flex-md-row justify-content-end align-items-stretch mt-3"
+                                    style="gap: 1rem;">
+                                    <form method="post" id="clearCartForm" class="w-100 w-md-auto">
+                                        <button type="button" class="btn btn-outline-danger w-100" id="clearCartBtn">Clear
+                                            Cart</button>
+                                    </form>
+                                    <a href="checkout.php" class="btn btn-outline-success w-100 w-md-auto">Proceed to
+                                        Checkout</a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                <?php } ?>
+                    <?php } ?>
+                </div>
             </div>
         </div>
     </div>
@@ -744,6 +744,24 @@ if (isset($_POST['delete'])) {
                                 Swal.fire('Oops!', data.message || 'Failed to clear cart.', 'error');
                             }
                         });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.getElementById('deleteAccountBtn')?.addEventListener('click', function () {
+            Swal.fire({
+                title: 'Delete your account?',
+                text: "This will permanently delete your account and cart!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteAccountForm').submit();
                 }
             });
         });

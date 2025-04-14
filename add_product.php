@@ -64,7 +64,7 @@ if (isset($_POST['add_product'])) {
         <div class="container-fluid justify-content-center">
             <ul class="navbar-nav text-center">
                 <li class="nav-item mx-2">
-                    <a class="nav-link disabled" href="#">Home</a>
+                    <a class="nav-link" href="index.php">Home</a>
                 </li>
                 <li class="nav-item mx-2">
                     <a class="nav-link active" href="profile.php">Profile</a>
@@ -93,7 +93,7 @@ if (isset($_POST['add_product'])) {
             <input type="file" name="image" accept="image/*" class="box" required>
 
             <input type="submit" name="add_product" value="Add Product" class="btn btn-outline-primary">
-            <a href="profile.php" class="btn btn-outline-primary">Back to Profile</a>
+            <a href="profile.php" class="btn btn-outline-secondary">Back to Profile</a>
         </form>
     </div>
 
