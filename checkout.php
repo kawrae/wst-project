@@ -52,9 +52,25 @@ $total = 0;
         <div class="d-flex flex-column flex-md-row justify-content-center align-items-stretch shadow checkout-container"
             style="border-radius: 20px; overflow: hidden;">
 
-            <div style="width: 500px; overflow: hidden;">
+            <div style="width: 500px; overflow: hidden; position: relative;">
                 <img src="images/checkout.webp" alt="Checkout Illustration" class="img-fluid w-100 h-100"
                     style="object-fit: cover; object-position: left center; border-top-left-radius: 20px; border-bottom-left-radius: 20px;">
+
+                <div style="
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    color: white;
+                    font-size: 24px;
+                    font-weight: bold;
+                    text-align: center;
+                    background: rgba(0, 0, 0, 0.5);
+                    padding: 10px 10px;
+                    border-radius: 12px;
+                ">
+                    Thanks for shopping with us!
+                </div>
             </div>
 
             <div class="p-4 bg-white d-flex flex-column justify-content-between"
