@@ -159,6 +159,7 @@ function displayproduct($conn, $fetch)
         $_SESSION["shopping_cart"] = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
 
+    // ADD TO CART
     if (isset($_POST["add"])) {
         if (isset($_SESSION["shopping_cart"])) {
             $item_array_id = array_column($_SESSION["shopping_cart"], "product_id");
@@ -188,25 +189,23 @@ function displayproduct($conn, $fetch)
                     window.location = 'profile.php';
                 }, 2100);
                 </script>";
-
             } else {
                 echo "
-<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-<script>
-    Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'info',
-        title: 'Product is already in the cart',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true
-    });
-    setTimeout(() => {
-        window.location = 'profile.php';
-    }, 2100);
-</script>";
-
+                <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+                <script>
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: 'Product is already in the cart',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                setTimeout(() => {
+                    window.location = 'profile.php';
+                }, 2100);
+                </script>";
             }
         } else {
             $item_array = array(
@@ -220,34 +219,49 @@ function displayproduct($conn, $fetch)
         }
     }
 
-    if (isset($_GET["action"])) {
-        if ($_GET["action"] == "delete") {
-            foreach ($_SESSION["shopping_cart"] as $keys => $value) {
-                if ($value["product_id"] == $_GET["id"]) {
-                    unset($_SESSION["shopping_cart"][$keys]);
-                    // Update the shopping cart in the database after removing an item
-                    saveShoppingCart($conn, $user_id, $_SESSION["shopping_cart"]);
-                    echo "
-<script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
-<script>
-    Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: 'Product has been removed',
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true
-    });
-    setTimeout(() => {
-        window.location = 'profile.php';
-    }, 2100);
-</script>";
-                }
+    // REMOVE ITEM
+    if (isset($_GET["action"]) && $_GET["action"] == "delete") {
+        foreach ($_SESSION["shopping_cart"] as $keys => $value) {
+            if ($value["product_id"] == $_GET["id"]) {
+                unset($_SESSION["shopping_cart"][$keys]);
+                saveShoppingCart($conn, $user_id, $_SESSION["shopping_cart"]);
+                echo "
+                <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
+                <script>
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Product has been removed',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+                setTimeout(() => {
+                    window.location = 'profile.php';
+                }, 2100);
+                </script>";
+                break;
             }
         }
     }
+
+    // UPDATE QUANTITY
+    if (isset($_GET["action"]) && $_GET["action"] == "update" && isset($_POST["quantities"])) {
+        foreach ($_POST["quantities"] as $productId => $newQty) {
+            foreach ($_SESSION["shopping_cart"] as &$item) {
+                if ($item["product_id"] == $productId) {
+                    $item["product_quantity"] = max(1, intval($newQty));
+                    break;
+                }
+            }
+        }
+        saveShoppingCart($conn, $user_id, $_SESSION["shopping_cart"]);
+        header("Location: profile.php");
+        exit;
+    }
 }
+
 
 function saveShoppingCart($conn, $user_id, $shopping_cart)
 {
@@ -255,11 +269,16 @@ function saveShoppingCart($conn, $user_id, $shopping_cart)
 
     foreach ($shopping_cart as $item) {
         $product_id = $item['product_id'];
-        $product_name = $item['product_name'];
-        $product_price = $item['product_price'];
-        $product_quantity = $item['product_quantity'];
-        mysqli_query($conn, "INSERT INTO shopping_cart (user_id, product_id, product_name, product_price, product_quantity)
-VALUES ('$user_id', '$product_id', '$product_name', '$product_price', '$product_quantity')");
+        $product_name = mysqli_real_escape_string($conn, $item['product_name']);
+        $product_price = floatval($item['product_price']);
+        $product_quantity = intval($item['product_quantity']);
+
+        $result = mysqli_query($conn, "INSERT INTO shopping_cart (user_id, product_id, product_name, product_price, product_quantity)
+        VALUES ('$user_id', '$product_id', '$product_name', '$product_price', '$product_quantity')");
+
+        if (!$result) {
+            error_log("Insert Error: " . mysqli_error($conn));
+        }
     }
 }
 
@@ -483,9 +502,16 @@ if (isset($_POST['delete'])) {
                                             ?>
                                             <tr>
                                                 <td><?php echo $value["product_name"]; ?></td>
-                                                <td><?php echo $value["product_quantity"]; ?></td>
-                                                <td>£<?php echo $value["product_price"]; ?></td>
-                                                <td>£<?php echo number_format($value["product_quantity"] * $value["product_price"], 2); ?>
+                                                <td>
+                                                    <input type="number" class="form-control quantity-input"
+                                                        data-id="<?php echo $value["product_id"]; ?>"
+                                                        value="<?php echo $value["product_quantity"]; ?>" min="1">
+                                                </td>
+                                                <td>£<?php echo number_format($value["product_price"], 2); ?></td>
+                                                <td>
+                                                    <span class="item-total" data-id="<?php echo $value['product_id']; ?>">
+                                                        £<?php echo number_format($value["product_quantity"] * $value["product_price"], 2); ?>
+                                                    </span>
                                                 </td>
                                                 <td><a href="profile.php?action=delete&id=<?php echo $value["product_id"]; ?>"
                                                         class="text-danger">Remove Item</a></td>
@@ -496,12 +522,11 @@ if (isset($_POST['delete'])) {
                                         ?>
                                         <tr>
                                             <td colspan="3" class="text-end fw-bold">Total</td>
-                                            <td colspan="2">£<?php echo number_format($total, 2); ?></td>
+                                            <td id="cart-total" colspan="2">£<?php echo number_format($total, 2); ?></td>
                                         </tr>
                                     <?php } ?>
                                 </tbody>
                             </table>
-
                             <div class="text-end mt-3">
                                 <a href="checkout.php" class="btn btn-outline-success">Proceed to Checkout</a>
                             </div>
@@ -624,6 +649,47 @@ if (isset($_POST['delete'])) {
                         }
                     });
                 });
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.quantity-input').on('keypress', function (e) {
+                if (e.which === 13) { // Enter key
+                    e.preventDefault();
+                    let input = $(this);
+                    let productId = input.data('id');
+                    let newQty = input.val();
+
+                    $.ajax({
+                        url: 'update_quantity.php',
+                        method: 'POST',
+                        data: {
+                            product_id: productId,
+                            quantity: newQty
+                        },
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.status === 'success') {
+                                let itemTotalSpan = $('span.item-total[data-id="' + productId + '"]');
+                                itemTotalSpan.text('£' + response.total);
+
+                                let cartTotal = 0;
+                                $('.item-total').each(function () {
+                                    let amount = parseFloat($(this).text().replace('£', ''));
+                                    if (!isNaN(amount)) cartTotal += amount;
+                                });
+                                $('#cart-total').text('£' + cartTotal.toFixed(2));
+                            } else {
+                                console.error('Update failed');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('AJAX Error:', status, error);
+                        }
+                    });
+                }
             });
         });
     </script>
