@@ -12,7 +12,30 @@ if (!isset($_SESSION["shopping_cart"])) {
     $result = mysqli_query($conn, $query);
     $_SESSION["shopping_cart"] = mysqli_num_rows($result) > 0 ? mysqli_fetch_all($result, MYSQLI_ASSOC) : [];
 }
+
+if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id'])) {
+    $product_id = $_GET['id'];
+
+    foreach ($_SESSION["shopping_cart"] as $key => $item) {
+        if ($item["product_id"] == $product_id) {
+            unset($_SESSION["shopping_cart"][$key]);
+            break;
+        }
+    }
+
+    $_SESSION["shopping_cart"] = array_values($_SESSION["shopping_cart"]);
+
+    $product_id = mysqli_real_escape_string($conn, $product_id);
+    $user_id = mysqli_real_escape_string($conn, $user_id);
+    $query = "DELETE FROM shopping_cart WHERE user_id = '$user_id' AND product_id = '$product_id'";
+    mysqli_query($conn, $query);
+
+    header("Location: cart.php");
+    exit;
+}
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
