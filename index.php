@@ -25,7 +25,7 @@
                     <a class="nav-link" href="products.php">Products</a>
                 </li>
                 <li class="nav-item mx-2">
-                    <a class="nav-link disabled" href="profile.php">Profile</a>
+                    <a class="nav-link" href="profile.php">Profile</a>
                 </li>
             </ul>
         </div>
@@ -37,7 +37,7 @@
         <div class="hero-content">
             <h1>Secure Shopping Made Simple</h1>
             <p>Welcome to B01651145 project submission for Web Server Technologies COMP09023</p>
-            <a href="profile.php" class="btn btn-main">Start Exploring</a>
+            <a href="products.php" class="btn btn-main">Start Exploring</a>
         </div>
     </section>
 
@@ -45,30 +45,29 @@
     <!-- Features -->
     <section class="features">
         <div class="container">
-            <h2 class="text-center mb-5">Project Highlights</h2>
-            <div class="row g-4">
-                <div class="col-md-3">
+            <div class="row justify-content-center g-4">
+                <div class="col-12 col-sm-6 col-md-3">
                     <div class="card p-4 text-center">
                         <i class="fas fa-lock fa-2x mb-3 text-success"></i>
                         <h5>Security</h5>
                         <p>Sessions, SQL injection prevention, user verification & more.</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
                     <div class="card p-4 text-center">
                         <i class="fas fa-user-circle fa-2x mb-3 text-success"></i>
                         <h5>Login System</h5>
                         <p>Robust authentication and account management.</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
                     <div class="card p-4 text-center">
                         <i class="fas fa-shopping-cart fa-2x mb-3 text-success"></i>
                         <h5>Cart Features</h5>
                         <p>AJAX-based cart, real-time updates, total calculation.</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-12 col-sm-6 col-md-3">
                     <div class="card p-4 text-center">
                         <i class="fas fa-paint-brush fa-2x mb-3 text-success"></i>
                         <h5>UX Design</h5>
