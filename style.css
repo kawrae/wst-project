@@ -401,6 +401,31 @@ button.btn-github:hover {
    transition: transform 0.2s ease;
 }
 
+form.p-4.shadow-sm {
+   background-color: #fff;
+   border-radius: 16px;
+}
+
+
+.card.h-100 {
+   border: none;
+   border-radius: 16px;
+   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+   transition: transform 0.25s ease, box-shadow 0.25s ease;
+   overflow: hidden;
+}
+
+.card.h-100:hover {
+   transform: translateY(-5px);
+   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.card h5, .card h6 {
+   text-align: center;
+   font-weight: 500;
+}
+
+
 .product:hover {
    transform: translateY(-5px);
 }
@@ -672,7 +697,7 @@ body.dark-mode {
    text-align: center;
    padding: 2rem;
    overflow: hidden;
-   background: linear-gradient(135deg, #000000, #c4c7c5);
+   background: linear-gradient(135deg, #085c13, #69f197);
    color: #fff;
 }
 
@@ -699,13 +724,18 @@ body.dark-mode {
 }
 
 .btn-main {
+   display: inline-block;
    background-color: #fff;
    color: #1c1c1e;
-   padding: 0.8rem 1.5rem;
+   padding: 0.8rem 2rem;
    border-radius: 30px;
    font-weight: 500;
    transition: all 0.3s ease;
+   width: auto;
+   max-width: 100%;
+   text-align: center;
 }
+
 
 .btn-main:hover {
    background-color: rgb(204, 243, 191);
@@ -714,9 +744,15 @@ body.dark-mode {
 }
 
 .features {
-   padding: 5rem 2rem;
+   padding: 4rem 2rem;
    background: #fff;
    color: #1c1c1e;
+}
+
+.features .row {
+   display: flex;
+   flex-wrap: wrap;
+   justify-content: center;
 }
 
 .features .card {
@@ -724,9 +760,19 @@ body.dark-mode {
    border-radius: 20px;
    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
    transition: transform 0.3s ease;
-   padding: 2rem 1rem;
+   padding: 2rem 1.5rem;
    text-align: center;
+   height: 100%;
 }
+
+.features h2 {
+   font-size: 1.5rem;
+   font-weight: bold;
+   margin-bottom: 0rem;
+   background-color: white !important;
+   color: black !important;
+}
+
 
 .features .card:hover {
    transform: translateY(-5px);
@@ -737,6 +783,7 @@ body.dark-mode {
    font-size: 2rem;
    color: #28a745;
 }
+
 
 canvas#bg-canvas {
    position: absolute;
@@ -818,4 +865,47 @@ canvas#bg-canvas {
 
 .navbar .dropdown-toggle::after {
    display: none;
+}
+
+/* toast styling */
+.swal2-toast {
+   background: #fff !important;
+   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.15) !important;
+   backdrop-filter: none !important;
+}
+
+.swal2-toast .swal2-html-container {
+   background: transparent !important;
+   padding: 0 !important;
+   margin: 0 !important;
+   box-shadow: none !important;
+   color: #333 !important;
+}
+
+.swal2-title {
+   font-size: 1rem;
+   color: #333;
+}
+
+.swal2-toast,
+.swal2-toast .swal2-html-container,
+.swal2-toast .swal2-icon,
+.swal2-toast .swal2-title {
+   background: #fff;
+   box-shadow: none !important;
+   backdrop-filter: none !important;
+}
+
+/* Optionally restyle text and icon if needed */
+.swal2-toast .swal2-title,
+.swal2-toast .swal2-html-container {
+   color: #333 !important;
+   font-size: 1rem;
+   font-weight: 600;
+}
+
+/* Optional: prevent weird padding/margins */
+.swal2-toast .swal2-html-container {
+   padding: 0 !important;
+   margin: 0 !important;
 }
