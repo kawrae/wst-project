@@ -128,7 +128,7 @@ if (isset($_POST['resend'])) {
 
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>register</title>
     <link rel="stylesheet" href="style.css">
     <script>
         window.onload = function () {
