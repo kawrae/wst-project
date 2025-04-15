@@ -130,20 +130,27 @@ function saveShoppingCart($conn, $user_id, $shopping_cart)
                     <h5 class="mb-3">Filter</h5>
 
                     <div class="mb-3">
+                        <label for="search" class="form-label">Search Products</label>
+                        <input type="text" name="search" id="search" class="form-control"
+                            placeholder="Enter product name" value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+                    </div>
+
+                    <div class="mb-3">
                         <label for="brand" class="form-label">Brand</label>
                         <select name="brand" id="brand" class="form-select">
                             <option value="">All</option>
-                            <option value="Samsung">Samsung</option>
-                            <option value="Google">Google</option>
-                            <option value="Apple">Apple</option>
-                            <option value="Honor">Honor</option>
+                            <option value="Samsung" <?= ($_GET['brand'] ?? '') === 'Samsung' ? 'selected' : '' ?>>Samsung</option>
+                            <option value="Google" <?= ($_GET['brand'] ?? '') === 'Google' ? 'selected' : '' ?>>Google</option>
+                            <option value="Apple" <?= ($_GET['brand'] ?? '') === 'Apple' ? 'selected' : '' ?>>Apple</option>
+                            <option value="Honor" <?= ($_GET['brand'] ?? '') === 'Honor' ? 'selected' : '' ?>>Honor</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
                         <label for="max_price" class="form-label">Max Price (£)</label>
                         <input type="number" name="max_price" id="max_price" class="form-control"
-                            placeholder="e.g. 1000">
+                            value="<?= htmlspecialchars($_GET['max_price'] ?? '') ?>" placeholder="e.g. 1000">
+
                     </div>
 
                     <button type="submit" class="btn btn-outline-primary w-100">Apply Filter</button>
@@ -164,6 +171,11 @@ function saveShoppingCart($conn, $user_id, $shopping_cart)
                     if (!empty($_GET['max_price'])) {
                         $price = floatval($_GET['max_price']);
                         $query .= " AND price <= $price";
+                    }
+
+                    if (!empty($_GET['search'])) {
+                        $search = mysqli_real_escape_string($conn, $_GET['search']);
+                        $query .= " AND description LIKE '%$search%'";
                     }
 
                     $result = mysqli_query($conn, $query);
