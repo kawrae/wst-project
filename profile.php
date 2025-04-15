@@ -414,23 +414,28 @@ if (isset($_POST['delete'])) {
                         <span>Cart</span>
                         <span class="cart-badge"><?= count($_SESSION["shopping_cart"] ?? []) ?></span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end p-3 shadow cart-dropdown"
-                        style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                    <ul class="dropdown-menu dropdown-menu-end p-3 shadow cart-dropdown" style="width: 320px;">
+                        <div class="cart-scroll-wrapper" style="max-height: 250px; overflow-y: auto;">
+                            <?php if (!empty($_SESSION["shopping_cart"])): ?>
+                                <?php foreach ($_SESSION["shopping_cart"] as $item): ?>
+                                    <li class="mb-2 border-bottom pb-2">
+                                        <strong><?= htmlspecialchars($item['product_name']) ?></strong><br>
+                                        <small>Qty: <?= $item['product_quantity'] ?> —
+                                            £<?= number_format($item['product_price'], 2) ?></small>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <li class="text-muted text-center">Your cart is empty.</li>
+                            <?php endif; ?>
+                        </div>
+
                         <?php if (!empty($_SESSION["shopping_cart"])): ?>
-                            <?php foreach ($_SESSION["shopping_cart"] as $item): ?>
-                                <li class="mb-2 border-bottom pb-2">
-                                    <strong><?= htmlspecialchars($item['product_name']) ?></strong><br>
-                                    <small>Qty: <?= $item['product_quantity'] ?> —
-                                        £<?= number_format($item['product_price'], 2) ?></small>
-                                </li>
-                            <?php endforeach; ?>
                             <li class="text-center mt-3">
                                 <a href="cart.php" class="btn btn-outline-primary btn-sm w-100">View Full Cart</a>
                             </li>
-                        <?php else: ?>
-                            <li class="text-muted text-center">Your cart is empty.</li>
                         <?php endif; ?>
                     </ul>
+
                 </div>
 
             </div>
@@ -480,57 +485,73 @@ if (isset($_POST['delete'])) {
 
 
         <div class="px-4 py-5 w-100" style="max-width: 85%; margin: 0 auto;">
-    <?php
-    $select = mysqli_query($conn, "SELECT * FROM `user_form` WHERE id = '$user_id'") or die('query failed');
-    $fetch = mysqli_fetch_assoc($select);
-    $imagePath = !empty($fetch['Image']) ? 'uploaded_img/' . $fetch['Image'] : 'images/default-avatar.png';
-    ?>
+            <?php
+            $select = mysqli_query($conn, "SELECT * FROM `user_form` WHERE id = '$user_id'") or die('query failed');
+            $fetch = mysqli_fetch_assoc($select);
+            $imagePath = !empty($fetch['Image']) ? 'uploaded_img/' . $fetch['Image'] : 'images/default-avatar.png';
+            ?>
 
-    <?php if ($fetch['user_type'] == 'user'): ?>
-        <!-- Centered layout for normal users -->
-        <div class="d-flex justify-content-center align-items-center w-100" style="min-height: 70vh;">
-            <div class="card text-center shadow-sm p-4" style="width: 100%; max-width: 400px;">
-                <img src="<?= $imagePath ?>" class="img-fluid rounded-circle mx-auto" width="120" height="120" />
-                <h3 class="mt-3">
-                    <?= htmlspecialchars($fetch['name']) ?>
-                    <small class="text-muted d-block" style="font-size: 0.95rem;"><?= ucfirst($fetch['user_type']) ?></small>
-                </h3>
-                <a href="update_profile.php" class="btn btn-outline-primary w-100 my-2">Update Profile</a>
-                <button type="button" id="deleteAccountBtn" class="btn btn-outline-danger w-100 my-2">Delete Your Account</button>
-                <form id="deleteAccountForm" method="post" action="" style="display: none;">
-                    <input type="hidden" name="confirm_delete" value="1">
-                </form>
-                <a href="profile.php?logout=<?= $user_id ?>" class="btn btn-outline-secondary w-100 my-2">Logout</a>
-                <p class="mt-3">New <a href="login.php">Login</a> or <a href="register.php">Register</a></p>
-            </div>
-        </div>
-        <?php displayproduct($conn, $fetch); ?>
-    <?php else: ?>
-        <!-- Split layout for admin/owner -->
-        <div class="row gx-5 gy-4">
-            <div class="col-12 col-md-4 col-lg-3">
-                <div class="card text-center shadow-sm p-4">
-                    <img src="<?= $imagePath ?>" class="img-fluid rounded-circle mx-auto" width="120" height="120" />
-                    <h3 class="mt-3">
-                        <?= htmlspecialchars($fetch['name']) ?>
-                        <small class="text-muted d-block" style="font-size: 0.95rem;"><?= ucfirst($fetch['user_type']) ?></small>
-                    </h3>
-                    <a href="update_profile.php" class="btn btn-outline-primary w-100 my-2">Update Profile</a>
-                    <button type="button" id="deleteAccountBtn" class="btn btn-outline-danger w-100 my-2">Delete Your Account</button>
-                    <a href="profile.php?logout=<?= $user_id ?>" class="btn btn-outline-secondary w-100 my-2">Logout</a>
+            <?php if ($fetch['user_type'] == 'user'): ?>
+                <!-- Centered layout for normal users -->
+                <div class="d-flex justify-content-center align-items-center w-100" style="min-height: 70vh;">
+                    <div class="card text-center shadow-sm p-4" style="width: 100%; max-width: 400px;">
+                        <img src="<?= $imagePath ?>" class="img-fluid rounded-circle mx-auto" width="120" height="120" />
+                        <h3 class="mt-3">
+                            <?= htmlspecialchars($fetch['name']) ?>
+                            <small class="text-muted d-block"
+                                style="font-size: 0.95rem;"><?= ucfirst($fetch['user_type']) ?></small>
+                        </h3>
+                        <a href="update_profile.php" class="btn btn-outline-primary w-100 my-2">Update Profile</a>
+
+                        <?php if ($fetch['user_type'] != 'owner'): ?>
+                            <button type="button" id="deleteAccountBtn" class="btn btn-outline-danger w-100 my-2">Delete Your
+                                Account</button>
+                            <form id="deleteAccountForm" method="post" action="" style="display: none;">
+                                <input type="hidden" name="confirm_delete" value="1">
+                            </form>
+                        <?php endif; ?>
+
+                        <a href="profile.php?logout=<?= $user_id ?>" class="btn btn-outline-secondary w-100 my-2">Logout</a>
+                        <p class="mt-3">New <a href="login.php">Login</a> or <a href="register.php">Register</a></p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 col-md-8 col-lg-9">
-                <?php
-                displayUsers($conn, $fetch);
-                echo "<br><br>";
-                adminProducts($conn, $fetch);
-                ?>
-            </div>
-        </div>
-    <?php endif; ?>
-</div>
+                <?php displayproduct($conn, $fetch); ?>
+            <?php else: ?>
+                <!-- Split layout for admin/owner -->
+                <div class="row gx-5 gy-4">
+                    <div class="col-12 col-md-4 col-lg-3">
+                        <div class="card text-center shadow-sm p-4">
+                            <img src="<?= $imagePath ?>" class="img-fluid rounded-circle mx-auto" width="120"
+                                height="120" />
+                            <h3 class="mt-3">
+                                <?= htmlspecialchars($fetch['name']) ?>
+                                <small class="text-muted d-block"
+                                    style="font-size: 0.95rem;"><?= ucfirst($fetch['user_type']) ?></small>
+                            </h3>
+                            <a href="update_profile.php" class="btn btn-outline-primary w-100 my-2">Update Profile</a>
 
+                            <?php if ($fetch['user_type'] != 'owner'): ?>
+                                <button type="button" id="deleteAccountBtn" class="btn btn-outline-danger w-100 my-2">Delete
+                                    Your Account</button>
+                                <form id="deleteAccountForm" method="post" action="" style="display: none;">
+                                    <input type="hidden" name="confirm_delete" value="1">
+                                </form>
+                            <?php endif; ?>
+
+                            <a href="profile.php?logout=<?= $user_id ?>"
+                                class="btn btn-outline-secondary w-100 my-2">Logout</a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-8 col-lg-9">
+                        <?php
+                        displayUsers($conn, $fetch);
+                        echo "<br><br>";
+                        adminProducts($conn, $fetch);
+                        ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <!-- Floating Chatbot Button -->
