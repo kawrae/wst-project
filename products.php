@@ -70,57 +70,6 @@ function saveShoppingCart($conn, $user_id, $shopping_cart)
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .cart-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(6px);
-            color: #fff;
-            border-radius: 50px;
-            padding: 0.3rem 1rem;
-            transition: all 0.3s ease;
-            font-weight: 400;
-        }
-
-        .cart-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
-        }
-
-        .cart-badge {
-            background-color: #dc3545;
-            font-size: 0.75rem;
-            margin-left: 0.5rem;
-            border-radius: 999px;
-            padding: 2px 8px;
-            font-weight: 600;
-        }
-
-        .cart-dropdown {
-            background: linear-gradient(145deg, rgba(245, 245, 245, 0.7), rgba(230, 230, 230, 0.6));
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .cart-dropdown li {
-            font-size: 0.9rem;
-            color: #333;
-        }
-
-        .cart-dropdown .btn {
-            font-size: 0.85rem;
-        }
-
-        .cart-dropdown strong {
-            color: #212529;
-        }
-
-        .navbar .dropdown-toggle::after {
-            display: none;
-        }
-    </style>
 </head>
 
 <body>
