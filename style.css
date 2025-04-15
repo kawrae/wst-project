@@ -909,3 +909,29 @@ canvas#bg-canvas {
    padding: 0 !important;
    margin: 0 !important;
 }
+
+/* product page styling  */
+.products-container {
+   display: flex;
+   align-items: flex-start;
+   gap: 20px;
+   padding: 20px;
+   flex-wrap: nowrap;
+}
+
+.filter-bar {
+   width: 280px;
+   flex-shrink: 0;
+}
+
+.product-grid {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 1.5rem;
+   justify-content: flex-start;
+}
+
+.product-grid > div {
+   width: 250px;
+   flex: 0 0 auto;
+}
