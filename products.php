@@ -94,23 +94,28 @@ function saveShoppingCart($conn, $user_id, $shopping_cart)
                     <span>Cart</span>
                     <span class="cart-badge"><?= count($_SESSION["shopping_cart"] ?? []) ?></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end p-3 shadow cart-dropdown"
-                    style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+                <ul class="dropdown-menu dropdown-menu-end p-3 shadow cart-dropdown" style="width: 320px;">
+                    <div class="cart-scroll-wrapper" style="max-height: 250px; overflow-y: auto;">
+                        <?php if (!empty($_SESSION["shopping_cart"])): ?>
+                            <?php foreach ($_SESSION["shopping_cart"] as $item): ?>
+                                <li class="mb-2 border-bottom pb-2">
+                                    <strong><?= htmlspecialchars($item['product_name']) ?></strong><br>
+                                    <small>Qty: <?= $item['product_quantity'] ?> —
+                                        £<?= number_format($item['product_price'], 2) ?></small>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li class="text-muted text-center">Your cart is empty.</li>
+                        <?php endif; ?>
+                    </div>
+
                     <?php if (!empty($_SESSION["shopping_cart"])): ?>
-                        <?php foreach ($_SESSION["shopping_cart"] as $item): ?>
-                            <li class="mb-2 border-bottom pb-2">
-                                <strong><?= htmlspecialchars($item['product_name']) ?></strong><br>
-                                <small>Qty: <?= $item['product_quantity'] ?> —
-                                    £<?= number_format($item['product_price'], 2) ?></small>
-                            </li>
-                        <?php endforeach; ?>
                         <li class="text-center mt-3">
                             <a href="cart.php" class="btn btn-outline-primary btn-sm w-100">View Full Cart</a>
                         </li>
-                    <?php else: ?>
-                        <li class="text-muted text-center">Your cart is empty.</li>
                     <?php endif; ?>
                 </ul>
+
             </div>
 
         </div>
@@ -118,32 +123,75 @@ function saveShoppingCart($conn, $user_id, $shopping_cart)
 
 
     <div class="container py-5">
-        <h2 class="mb-4 text-center">Browse Products</h2>
-        <div class="row g-4">
-            <?php
-            $result = mysqli_query($conn, "SELECT * FROM product ORDER BY id ASC");
-            if (mysqli_num_rows($result) > 0):
-                while ($row = mysqli_fetch_assoc($result)):
-                    ?>
-                    <div class="col-6 col-md-4 col-lg-3">
-                        <form method="post" action="products.php?action=add&id=<?= $row["id"] ?>">
-                            <div class="card h-100 shadow-sm p-3 mb-3">
-                                <img src="products_img/<?= $row["image"] ?>" width="100%" height="200px"
-                                    class="card-img-top rounded mb-2" style="object-fit: cover;">
-                                <h5 style="color:black;"><?= $row["description"] ?></h5>
-                                <h6 class="text-danger">£<?= $row["price"] ?></h6>
-                                <input type="text" name="quantity" class="form-control mb-2" value="1">
-                                <input type="hidden" name="hidden_name" value="<?= $row["description"] ?>">
-                                <input type="hidden" name="hidden_price" value="<?= $row["price"] ?>">
-                                <input type="submit" name="add" class="btn-cart w-100" value="Add to cart">
-                            </div>
-                        </form>
+        <div class="row">
+            <!-- Filter Sidebar -->
+            <div class="col-12 col-md-3 mb-4">
+                <form method="get" class="p-4 shadow-sm rounded bg-white">
+                    <h5 class="mb-3">Filter</h5>
+
+                    <div class="mb-3">
+                        <label for="brand" class="form-label">Brand</label>
+                        <select name="brand" id="brand" class="form-select">
+                            <option value="">All</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="Google">Google</option>
+                            <option value="Apple">Apple</option>
+                            <option value="Honor">Honor</option>
+                        </select>
                     </div>
-                <?php endwhile; else: ?>
-                <p class="text-center">No products available.</p>
-            <?php endif; ?>
+
+                    <div class="mb-3">
+                        <label for="max_price" class="form-label">Max Price (£)</label>
+                        <input type="number" name="max_price" id="max_price" class="form-control"
+                            placeholder="e.g. 1000">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
+                </form>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="col-12 col-md-9">
+                <div class="row g-4">
+                    <?php
+                    $query = "SELECT * FROM product WHERE 1=1";
+
+                    if (!empty($_GET['brand'])) {
+                        $brand = mysqli_real_escape_string($conn, $_GET['brand']);
+                        $query .= " AND description LIKE '%$brand%'";
+                    }
+
+                    if (!empty($_GET['max_price'])) {
+                        $price = floatval($_GET['max_price']);
+                        $query .= " AND price <= $price";
+                    }
+
+                    $result = mysqli_query($conn, $query);
+                    if (mysqli_num_rows($result) > 0):
+                        while ($row = mysqli_fetch_assoc($result)):
+                            ?>
+                            <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
+                                <form method="post" action="products.php?action=add&id=<?= $row["id"] ?>" class="w-100">
+                                    <div class="card h-100 shadow-sm p-3 w-100">
+                                        <img src="products_img/<?= $row["image"] ?>" height="200"
+                                            class="card-img-top rounded mb-2" style="object-fit: cover;">
+                                        <h5 style="color:black;"><?= $row["description"] ?></h5>
+                                        <h6 class="text-danger">£<?= $row["price"] ?></h6>
+                                        <input type="text" name="quantity" class="form-control mb-2" value="1">
+                                        <input type="hidden" name="hidden_name" value="<?= $row["description"] ?>">
+                                        <input type="hidden" name="hidden_price" value="<?= $row["price"] ?>">
+                                        <input type="submit" name="add" class="btn-cart w-100" value="Add to cart">
+                                    </div>
+                                </form>
+                            </div>
+                        <?php endwhile; else: ?>
+                        <p class="text-center">No products found matching your filters.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
+
 
     <script>
         <?php if (isset($_SESSION['cart_added'])): ?>
