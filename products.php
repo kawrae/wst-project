@@ -123,103 +123,102 @@ function saveShoppingCart($conn, $user_id, $shopping_cart)
 
 
     <div class="container py-5">
-    <div class="d-flex flex-wrap gap-4">
-        <!-- Filter Sidebar -->
-        <div class="flex-shrink-0" style="width: 280px;">
-            <form method="get" class="p-4 shadow-sm rounded bg-white">
-                <h5 class="mb-3">Filter</h5>
+        <div class="d-flex flex-row gap-4 align-start">
+            <!-- Filter Sidebar -->
+            <div class="flex-shrink-0" style="width: 280px;">
+                <form method="get" class="p-4 shadow-sm rounded bg-white">
+                    <h5 class="mb-3">Filter</h5>
 
-                <div class="mb-3">
-                    <label for="brand" class="form-label">Brand</label>
-                    <select name="brand" id="brand" class="form-select">
-                        <option value="">All</option>
-                        <option value="Samsung">Samsung</option>
-                        <option value="Google">Google</option>
-                        <option value="Apple">Apple</option>
-                        <option value="Honor">Honor</option>
-                    </select>
+                    <div class="mb-3">
+                        <label for="brand" class="form-label">Brand</label>
+                        <select name="brand" id="brand" class="form-select">
+                            <option value="">All</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="Google">Google</option>
+                            <option value="Apple">Apple</option>
+                            <option value="Honor">Honor</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="max_price" class="form-label">Max Price (£)</label>
+                        <input type="number" name="max_price" id="max_price" class="form-control"
+                            placeholder="e.g. 1000">
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-primary w-100">Apply Filter</button>
+                </form>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="flex-grow-1">
+                <div class="d-flex flex-wrap gap-4">
+                    <?php
+                    $query = "SELECT * FROM product WHERE 1=1";
+
+                    if (!empty($_GET['brand'])) {
+                        $brand = mysqli_real_escape_string($conn, $_GET['brand']);
+                        $query .= " AND description LIKE '%$brand%'";
+                    }
+
+                    if (!empty($_GET['max_price'])) {
+                        $price = floatval($_GET['max_price']);
+                        $query .= " AND price <= $price";
+                    }
+
+                    $result = mysqli_query($conn, $query);
+                    if (mysqli_num_rows($result) > 0):
+                        while ($row = mysqli_fetch_assoc($result)): ?>
+                            <div style="width: 220px; flex: 0 0 auto;">
+                                <form method="post" action="products.php?action=add&id=<?= $row["id"] ?>" class="h-100">
+                                    <div class="card h-100 shadow-sm p-3">
+                                        <img src="products_img/<?= $row["image"] ?>" height="200"
+                                            class="card-img-top rounded mb-2" style="object-fit: cover;">
+                                        <h5 style="color:black;"><?= $row["description"] ?></h5>
+                                        <h6 class="text-danger">£<?= $row["price"] ?></h6>
+                                        <input type="text" name="quantity" class="form-control mb-2" value="1">
+                                        <input type="hidden" name="hidden_name" value="<?= $row["description"] ?>">
+                                        <input type="hidden" name="hidden_price" value="<?= $row["price"] ?>">
+                                        <input type="submit" name="add" class="btn-cart w-100" value="Add to cart">
+                                    </div>
+                                </form>
+                            </div>
+                        <?php endwhile;
+                    else: ?>
+                        <p class="text-center">No products found matching your filters.</p>
+                    <?php endif; ?>
                 </div>
-
-                <div class="mb-3">
-                    <label for="max_price" class="form-label">Max Price (£)</label>
-                    <input type="number" name="max_price" id="max_price" class="form-control"
-                           placeholder="e.g. 1000">
-                </div>
-
-                <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
-            </form>
-        </div>
-
-        <!-- Product Grid -->
-        <div class="flex-grow-1">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-                <?php
-                $query = "SELECT * FROM product WHERE 1=1";
-
-                if (!empty($_GET['brand'])) {
-                    $brand = mysqli_real_escape_string($conn, $_GET['brand']);
-                    $query .= " AND description LIKE '%$brand%'";
-                }
-
-                if (!empty($_GET['max_price'])) {
-                    $price = floatval($_GET['max_price']);
-                    $query .= " AND price <= $price";
-                }
-
-                $result = mysqli_query($conn, $query);
-                if (mysqli_num_rows($result) > 0):
-                    while ($row = mysqli_fetch_assoc($result)): ?>
-                        <div class="col">
-                            <form method="post" action="products.php?action=add&id=<?= $row["id"] ?>" class="h-100">
-                                <div class="card h-100 shadow-sm p-3">
-                                    <img src="products_img/<?= $row["image"] ?>" height="200"
-                                         class="card-img-top rounded mb-2" style="object-fit: cover;">
-                                    <h5 style="color:black;"><?= $row["description"] ?></h5>
-                                    <h6 class="text-danger">£<?= $row["price"] ?></h6>
-                                    <input type="text" name="quantity" class="form-control mb-2" value="1">
-                                    <input type="hidden" name="hidden_name" value="<?= $row["description"] ?>">
-                                    <input type="hidden" name="hidden_price" value="<?= $row["price"] ?>">
-                                    <input type="submit" name="add" class="btn-cart w-100" value="Add to cart">
-                                </div>
-                            </form>
-                        </div>
-                    <?php endwhile;
-                else: ?>
-                    <p class="text-center">No products found matching your filters.</p>
-                <?php endif; ?>
             </div>
         </div>
-    </div>
-</div>
 
 
 
-    <script>
-        <?php if (isset($_SESSION['cart_added'])): ?>
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: 'Product added to cart',
-                showConfirmButton: false,
-                timer: 2000
-            });
-            <?php unset($_SESSION['cart_added']); endif; ?>
+        <script>
+            <?php if (isset($_SESSION['cart_added'])): ?>
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Product added to cart',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                <?php unset($_SESSION['cart_added']); endif; ?>
 
-        <?php if (isset($_SESSION['cart_duplicate'])): ?>
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'info',
-                title: 'Product is already in the cart',
-                showConfirmButton: false,
-                timer: 2000
-            });
-            <?php unset($_SESSION['cart_duplicate']); endif; ?>
-    </script>
+            <?php if (isset($_SESSION['cart_duplicate'])): ?>
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: 'Product is already in the cart',
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                <?php unset($_SESSION['cart_duplicate']); endif; ?>
+        </script>
 
-    <!-- js -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- js -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
