@@ -22,10 +22,10 @@
                     <a class="nav-link active" href="index.php">Home</a>
                 </li>
                 <li class="nav-item mx-2">
-                    <a class="nav-link" href="profile.php">Profile</a>
+                    <a class="nav-link" href="products.php">Products</a>
                 </li>
                 <li class="nav-item mx-2">
-                    <a class="nav-link disabled" href="#">Contact</a>
+                    <a class="nav-link disabled" href="profile.php">Profile</a>
                 </li>
             </ul>
         </div>
