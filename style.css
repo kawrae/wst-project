@@ -420,7 +420,8 @@ form.p-4.shadow-sm {
    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
 }
 
-.card h5, .card h6 {
+.card h5,
+.card h6 {
    text-align: center;
    font-weight: 500;
 }
@@ -637,6 +638,7 @@ body.dark-mode {
 
 .navbar {
    background: linear-gradient(to right, #1f1f1f, #2d2d2d);
+   z-index: 101;
 }
 
 .shoppingcart {
@@ -688,18 +690,7 @@ body.dark-mode {
    text-align: center;
 }
 
-.hero-section {
-   position: relative;
-   min-height: 100vh;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   text-align: center;
-   padding: 2rem;
-   overflow: hidden;
-   background: linear-gradient(135deg, #085c13, #69f197);
-   color: #fff;
-}
+
 
 .hero-content {
    position: relative;
@@ -744,10 +735,11 @@ body.dark-mode {
 }
 
 .features {
-   padding: 4rem 2rem;
-   background: #fff;
-   color: #1c1c1e;
-}
+   position: relative;
+   z-index: 10;
+   background: #ffffff;
+   color: #111;
+ }
 
 .features .row {
    display: flex;
@@ -931,7 +923,7 @@ canvas#bg-canvas {
    justify-content: flex-start;
 }
 
-.product-grid > div {
+.product-grid>div {
    width: 250px;
    flex: 0 0 auto;
 }
