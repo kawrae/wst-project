@@ -62,7 +62,7 @@ $total = 0;
                     left: 50%;
                     transform: translate(-50%, -50%);
                     color: white;
-                    font-size: 24px;
+                    font-size: 28px;
                     font-weight: bold;
                     text-align: center;
                     background: rgba(0, 0, 0, 0.5);
