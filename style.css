@@ -81,11 +81,6 @@
    color: red;
 }
 
-
-.btn:hover {
-   background-color: var(--dark-blue);
-}
-
 .delete-btn {
    background-color: var(--red);
 }
@@ -345,9 +340,6 @@ body {
    margin-top: 10px;
 }
 
-.btn:hover {
-   background-color: var(--primary-dark);
-}
 
 .btn-danger {
    background-color: var(--danger);
