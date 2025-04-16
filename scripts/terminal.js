@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 switch (mainCmd) {
                     case "help":
                         outputLines.push("> Available commands:");
-                        outputLines.push('- page "profile/products"');
+                        outputLines.push('- page "products/profile"');
                         if (role === "admin" || role === "owner") {
                             outputLines.push('- add user "name" "email" <user_type>');
                             outputLines.push('- delete user "name" "email"');
