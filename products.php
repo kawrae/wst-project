@@ -154,6 +154,7 @@ function saveShoppingCart($conn, $user_id, $shopping_cart)
                     </div>
 
                     <button type="submit" class="btn btn-outline-primary w-100">Apply Filter</button>
+                    <button type="button" class="btn btn-outline-danger w-100" onclick="window.location.href='products.php'">Clear Filter</button>
                 </form>
             </div>
 

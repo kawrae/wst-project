@@ -1,5 +1,4 @@
-html,
-body {
+html, body {
     background-color: black;
     margin: 0;
     padding: 0;
@@ -14,24 +13,17 @@ body {
     overflow: hidden;
     z-index: 5;
     background:
-        radial-gradient(ellipse at center,
+        radial-gradient(
+            ellipse at center,
             rgba(0, 0, 0, 0) 50%,
-            rgba(0, 0, 0, 1) 100%),
+            rgba(0, 0, 0, 1) 100%
+        ),
         #001a0c;
-    opacity: 0;
-    animation: monitorFadeIn 0.4s ease-out 1.6s forwards;
-    opacity: 1 !important;
+        opacity: 0;
+        animation: monitorFadeIn 0.4s ease-out 1.6s forwards;
+        opacity: 1 !important;
 }
 
-#monitor::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: linear-gradient(to bottom, rgba(0,255,0,0.15) 1px, transparent 23px);
-    background-size: 100% 24px;
-    pointer-events: none;
-    z-index: 99;
-}
 
 @keyframes monitorFadeIn {
     to {
@@ -57,11 +49,13 @@ body {
     content: "";
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(to bottom,
-            rgba(0, 255, 0, 0.06) 0px,
-            rgba(0, 255, 0, 0.06) 24px,
-            rgba(0, 0, 0, 0.25) 24px,
-            rgba(0, 0, 0, 0.25) 48px);
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0, 255, 0, 0.06) 0px,
+        rgba(0, 255, 0, 0.06) 12px,
+        rgba(0, 0, 0, 0.25) 12px,
+        rgba(0, 0, 0, 0.25) 24px
+    );
     background-position: 0 14px;
     z-index: 1;
     mix-blend-mode: screen;
@@ -75,10 +69,12 @@ body {
     width: 100%;
     height: 100px;
     z-index: 8;
-    background: linear-gradient(0deg,
-            rgba(0, 0, 0, 0) 0%,
-            rgba(255, 255, 255, 0.2) 10%,
-            rgba(0, 0, 0, 0.1) 100%);
+    background: linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(255, 255, 255, 0.2) 10%,
+        rgba(0, 0, 0, 0.1) 100%
+    );
     opacity: 0.1;
     position: absolute;
     bottom: 100%;
@@ -87,12 +83,9 @@ body {
 }
 
 @keyframes scanline {
-
-    0%,
-    80% {
+    0%, 80% {
         bottom: 100%;
     }
-
     100% {
         bottom: 0%;
     }
@@ -108,26 +101,25 @@ body {
     z-index: 3;
     width: 100%;
     max-width: 960px;
-    margin: 24px auto;
-    padding: 0 2rem;
+    margin: 0 auto;
+    padding: 4rem 2rem 2rem 2rem;
     box-sizing: border-box;
     overflow-y: auto;
-    max-height: calc(24px * 20);
-    min-height: calc(24px * 20);
+    max-height: calc(24px * 35);
+    min-height: calc(24px * 35);
     scrollbar-color: #4df56333 transparent;
     overflow-x: hidden;
     padding-right: calc(2rem + 8px);
     scrollbar-width: none;
     -ms-overflow-style: none;
+    scroll-snap-type: y mandatory;
 }
-
 
 .terminal::-webkit-scrollbar {
     display: none;
 }
 
-.terminal,
-.terminal * {
+.terminal, .terminal * {
     font-family: 'VT323', monospace !important;
     scroll-snap-type: y mandatory;
 }
@@ -140,14 +132,10 @@ body {
 }
 
 @keyframes blink {
-
-    0%,
-    50% {
+    0%, 50% {
         opacity: 1;
     }
-
-    51%,
-    100% {
+    51%, 100% {
         opacity: 0;
     }
 }
@@ -226,15 +214,12 @@ body {
     0% {
         transform: scaleY(1);
     }
-
     60% {
         transform: scaleY(0.02);
     }
-
     80% {
         transform: scaleY(0.02) scaleX(0);
     }
-
     100% {
         transform: scaleY(0) scaleX(0);
         visibility: hidden;
@@ -243,18 +228,16 @@ body {
 
 @keyframes textShadow {
     0% {
-        text-shadow: 0.4px 0 1px rgba(0, 30, 255, 0.5), -0.4px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
+      text-shadow: 0.4px 0 1px rgba(0, 30, 255, 0.5), -0.4px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
     }
-
     5% {
-        text-shadow: 2.8px 0 1px rgba(0, 30, 255, 0.5), -2.8px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
+      text-shadow: 2.8px 0 1px rgba(0, 30, 255, 0.5), -2.8px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
     }
-
     100% {
-        text-shadow: 0.4px 0 1px rgba(0, 30, 255, 0.5), -0.4px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
+      text-shadow: 0.4px 0 1px rgba(0, 30, 255, 0.5), -0.4px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
     }
-}
+  }
 
-.text-glitch {
+  .text-glitch {
     animation: textShadow 1s infinite;
-}
+  }
