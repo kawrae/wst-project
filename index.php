@@ -66,15 +66,51 @@ if (isset($_SESSION['user_id'])) {
     </div>
 
     <audio id="boot-sound" src="/audio/boot.mp3" preload="auto"></audio>
-<script>
-    const user_id = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
-</script>
+    <script>
+        const user_id = <?= json_encode($_SESSION['user_id'] ?? null) ?>;
+    </script>
     <script>
         const userName = <?= json_encode($userName); ?>;
         const userRole = <?= json_encode($userRole); ?>;
     </script>
     <script src="scripts/terminal.js"></script>
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.domElement.style.position = "absolute";
+    renderer.domElement.style.top = 0;
+    renderer.domElement.style.left = 0;
+    renderer.domElement.style.zIndex = "0"; // push behind other UI
+    document.getElementById("monitor").prepend(renderer.domElement);
+
+    const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+    scene.add(light);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load('models/laptop/source/laptop.glb', function (gltf) {
+        scene.add(gltf.scene);
+        gltf.scene.scale.set(1.5, 1.5, 1.5);
+        gltf.scene.position.y = -1;
+        gltf.scene.rotation.y = Math.PI;
+    }, undefined, function (error) {
+        console.error("Error loading model:", error);
+    });
+
+    camera.position.z = 5;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    }
+    animate();
+</script>
 
 
 </html>
