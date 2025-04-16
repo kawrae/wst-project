@@ -42,6 +42,7 @@ html, body {
     justify-content: flex-start;
     position: relative;
     background-color: transparent;
+    z-index: 2;
 }
 
 #crt::before {
@@ -78,6 +79,7 @@ html, body {
     position: absolute;
     bottom: 100%;
     animation: scanline 7s linear infinite;
+    z-index: 2;
 }
 
 @keyframes scanline {
