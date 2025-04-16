@@ -373,6 +373,17 @@ if (isset($_POST['delete'])) {
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
 </head>
 
 <body>
@@ -495,7 +506,7 @@ if (isset($_POST['delete'])) {
                 <!-- Centered layout for normal users -->
                 <div class="d-flex justify-content-center align-items-center w-100" style="min-height: 70vh;">
                     <div class="card text-center shadow-sm p-4" style="width: 100%; max-width: 400px;">
-                        <img src="<?= $imagePath ?>" class="img-fluid rounded-circle mx-auto" width="120" height="120" />
+                        <img src="<?= $imagePath ?>" class="profile-avatar mx-auto" />
                         <h3 class="mt-3">
                             <?= htmlspecialchars($fetch['name']) ?>
                             <small class="text-muted d-block"
