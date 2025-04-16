@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     
         if (input.includes("add user") && matches.length < 7) {
-            outputLines.push("⚠️ Please ensure all fields are wrapped in double quotes!");
+            outputLines.push("⚠️ Please ensure all fields are wrapped in double quotes");
         }
     
         return matches;
